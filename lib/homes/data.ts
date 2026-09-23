@@ -1,12 +1,23 @@
 import { sql } from '@vercel/postgres';
 
 import type { ConversationHistoryItem, DashboardSummary, Lead, LeadStage } from '@/lib/homes/types';
+import { isDemoMode } from '@/lib/demo-mode';
+
+const emptyDashboardSummary: DashboardSummary = {
+  openLeads: 0,
+  qualifiedLeads: 0,
+  conversationsToday: 0,
+  scheduledVisits: 0,
+  callsAwaitingPermission: 0,
+};
 
 function numberValue(value: unknown): number {
   return Number(value ?? 0);
 }
 
 export async function getDashboardSummary(userId: string): Promise<DashboardSummary> {
+  if (isDemoMode()) return emptyDashboardSummary;
+
   try {
     const [leadRows, conversationRows, visitRows, permissionRows] = await Promise.all([
       sql`SELECT
@@ -30,11 +41,13 @@ export async function getDashboardSummary(userId: string): Promise<DashboardSumm
     };
   } catch (error) {
     console.warn('[Homes] Dashboard data unavailable. Has database/schema.sql been applied?', error);
-    return { openLeads: 0, qualifiedLeads: 0, conversationsToday: 0, scheduledVisits: 0, callsAwaitingPermission: 0 };
+    return emptyDashboardSummary;
   }
 }
 
 export async function getLeads(userId: string): Promise<Lead[]> {
+  if (isDemoMode()) return [];
+
   try {
     const { rows } = await sql`SELECT id, display_name, phone, source, stage, score, temperature,
       intent, property_type, preferred_location, budget_min, budget_max, bedrooms, urgency,
@@ -69,6 +82,8 @@ export async function getLeads(userId: string): Promise<Lead[]> {
 }
 
 export async function getConversationHistory(userId: string): Promise<ConversationHistoryItem[]> {
+  if (isDemoMode()) return [];
+
   try {
     const { rows } = await sql`SELECT c.id, COALESCE(l.display_name, c.contact_phone) AS lead_name,
       c.contact_phone, c.last_message_preview, c.last_message_at, c.unread_count,
@@ -92,3 +107,4 @@ export async function getConversationHistory(userId: string): Promise<Conversati
     return [];
   }
 }
+

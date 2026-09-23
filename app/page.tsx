@@ -9,6 +9,8 @@ import LoggedOut from '@/app/components/LoggedOut';
 import publicConfig from '@/app/publicConfig';
 import { getAppDetails } from '@/app/api/beUtils';
 import { auth0 } from '@/lib/auth0';
+import { isDemoMode } from '@/lib/demo-mode';
+import { redirect } from 'next/navigation';
 
 const { appId, publicEsVersions, publicEsFeatureTypes, publicEsFeatureOptions } = publicConfig;
 
@@ -20,6 +22,8 @@ export default async function Home() {
   if (!session) {
     return <LoggedOut />;
   }
+
+  if (isDemoMode()) redirect('/overview');
 
   const userId = session.user.email;
   const appDetails = await getAppDetails(appId);
@@ -41,3 +45,4 @@ export default async function Home() {
     </SidebarLayout>
   );
 }
+

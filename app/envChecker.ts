@@ -40,6 +40,8 @@ export const ENV_VAR_DESCRIPTIONS: { [key: string]: string } = {
 };
 
 export function getMissingEnvVars(): MissingEnvVarInfo[] {
+  if (isDemoMode()) return [];
+
   return Object.entries(ENV_VAR_DESCRIPTIONS)
     .filter(([key]) => !process.env[key]?.trim())
     .map(([key]) => ({
@@ -47,3 +49,5 @@ export function getMissingEnvVars(): MissingEnvVarInfo[] {
       description: ENV_VAR_DESCRIPTIONS[key] || 'No description available',
     }));
 }
+import { isDemoMode } from '@/lib/demo-mode';
+

@@ -5,6 +5,7 @@ import LoggedOut from '@/app/components/LoggedOut';
 import SidebarLayout from '@/app/components/SidebarLayout';
 import { Badge } from '@/app/components/ui/Badge';
 import { auth0 } from '@/lib/auth0';
+import { isDemoMode } from '@/lib/demo-mode';
 
 const capabilities = [
   { title: 'Webhook calls', description: 'Eventos connect, terminate, failed e status sao reconhecidos e publicados em tempo real.', Icon: PhoneCall, ready: true },
@@ -17,9 +18,10 @@ export default async function VoicePage() {
   const session = await auth0.getSession();
   if (!session) return <LoggedOut />;
   const userId = session.user.email || session.user.sub || 'usuario';
-  const hasMeta = Boolean(process.env.FB_APP_ID && process.env.FB_APP_SECRET);
-  const hasRealtime = Boolean(process.env.ABLY_KEY);
-  const hasVoiceProvider = Boolean(process.env.VOICE_PROVIDER_API_KEY);
+  const demoMode = isDemoMode();
+  const hasMeta = !demoMode && Boolean(process.env.FB_APP_ID && process.env.FB_APP_SECRET);
+  const hasRealtime = !demoMode && Boolean(process.env.ABLY_KEY);
+  const hasVoiceProvider = !demoMode && Boolean(process.env.VOICE_PROVIDER_API_KEY);
 
   return (
     <SidebarLayout userId={userId} appName="Homes AI">
@@ -39,3 +41,4 @@ export default async function VoicePage() {
     </SidebarLayout>
   );
 }
+

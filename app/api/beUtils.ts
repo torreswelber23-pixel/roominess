@@ -9,6 +9,7 @@ import { sql } from '@vercel/postgres';
 
 import getPrivateConfig from '@/app/privateConfig';
 import publicConfig from '@/app/publicConfig';
+import { demoAppDetails, isDemoMode } from '@/lib/demo-mode';
 import type {
   SubscribeWebhookResponse,
   SqlResult,
@@ -265,6 +266,8 @@ export async function send(
 //////////////////////////////////////////////////////////
 
 export async function getWabas(userId: string): Promise<WabaWithDetails[]> {
+  if (isDemoMode()) return [];
+
   // Get page IDs and access tokens from the database
   const { rows }: { rows: WabaRow[] } = await sql`
     SELECT DISTINCT waba_id, access_token, business_id
@@ -322,6 +325,8 @@ async function getWabaRows(userId: string): Promise<WabaRow[]> {
 }
 
 export async function getClientPhones(userId: string): Promise<ClientPhone[]> {
+  if (isDemoMode()) return [];
+
   const rows: WabaRow[] = await getWabaRows(userId);
   const nestedPhones: PhoneDetails[][] = await Promise.all(
     rows.map(async (row: WabaRow) => {
@@ -601,6 +606,8 @@ export async function getTemplateGatingData(
 //////////////////////////////////////////////////////////
 
 export async function getPages(userId: string): Promise<PageWithDetails[]> {
+  if (isDemoMode()) return [];
+
   // Get page IDs and access tokens from the database
   const { rows }: { rows: PageRow[] } = await sql`
     SELECT DISTINCT page_id, access_token, business_id
@@ -637,6 +644,8 @@ export async function getPages(userId: string): Promise<PageWithDetails[]> {
 //////////////////////////////////////////////////////////
 
 export async function getAdAccounts(userId: string): Promise<AdAccountWithDetails[]> {
+  if (isDemoMode()) return [];
+
   // Get ad account IDs and access tokens from the database
   const { rows }: { rows: AdAccountRow[] } = await sql`
     SELECT DISTINCT ad_account_id, access_token, business_id
@@ -784,6 +793,8 @@ export async function setAckBotStatus(
 //////////////////////////////////////////////////////////
 
 export async function getAppDetails(appId: string): Promise<AppDetails> {
+  if (isDemoMode()) return demoAppDetails;
+
   const privateConfig = await getPrivateConfig();
   console.log('getAppDetails:', 'appId', appId);
   const url = `/${appId}?fields=client_config,name,logo_url,app_domains,app_type,company,link,config_ids`;
@@ -797,6 +808,8 @@ export async function getAppDetails(appId: string): Promise<AppDetails> {
 //////////////////////////////////////////////////////////
 
 export async function getDatasets(userId: string): Promise<DatasetWithDetails[]> {
+  if (isDemoMode()) return [];
+
   // Get dataset IDs and access tokens from the database
   const { rows }: { rows: DatasetRow[] } = await sql`
     SELECT DISTINCT dataset_id, access_token, business_id
@@ -844,6 +857,8 @@ export async function getDatasets(userId: string): Promise<DatasetWithDetails[]>
 //////////////////////////////////////////////////////////
 
 export async function getCatalogs(userId: string): Promise<CatalogWithDetails[]> {
+  if (isDemoMode()) return [];
+
   // Get catalog IDs and access tokens from the database
   const { rows }: { rows: CatalogRow[] } = await sql`
     SELECT DISTINCT catalog_id, access_token, business_id
@@ -882,6 +897,8 @@ export async function getCatalogs(userId: string): Promise<CatalogWithDetails[]>
 //////////////////////////////////////////////////////////
 
 export async function getInstagramAccounts(userId: string): Promise<InstagramAccountWithDetails[]> {
+  if (isDemoMode()) return [];
+
   // Get Instagram account IDs and access tokens from the database
   const { rows }: { rows: InstagramAccountRow[] } = await sql`
     SELECT DISTINCT instagram_account_id, access_token, business_id
@@ -961,3 +978,4 @@ export async function getInstagramAccounts(userId: string): Promise<InstagramAcc
   );
   return instagramAccountsWithDetails;
 }
+
