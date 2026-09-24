@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "db:migrate": "node scripts/apply-schema.mjs",
     "lint:all": "npm run lint && npm run type-check",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -61,3 +62,4 @@
     "@tootallnate/once": ">=3.0.1"
   }
 }
+

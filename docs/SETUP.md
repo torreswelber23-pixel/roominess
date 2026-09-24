@@ -41,10 +41,10 @@ as a production authentication strategy.
 ### Neon / PostgreSQL
 
 - Connect a Neon database to the Vercel project or set `POSTGRES_URL` manually.
-- Apply the upstream sample tables from the root README.
-- Apply `database/schema.sql` for leads, conversations, messages,
-  qualifications, calls, permissions, agents, handoffs, appointments and CRM
-  sync jobs.
+- Run `npm run db:migrate`. The command safely applies the upstream-compatible
+  tables from `database/meta-schema.sql` followed by `database/schema.sql` for
+  leads, conversations, messages, qualifications, calls, permissions, agents,
+  handoffs, appointments and CRM sync jobs.
 - Before production, enable Row Level Security if database access will exist
   outside the server and define policies that match the Auth0 tenancy model.
 
@@ -78,7 +78,7 @@ provider-specific adapters and background retries still need implementation.
 - Connect Neon through the Vercel integration or supply `POSTGRES_URL`.
 - After the first deployment, update Auth0 URLs, Meta App Domains, Facebook
   Login redirect URLs and the Meta webhook callback with the final domain.
-- Run database migrations before directing production webhooks to the app.
+- Run `npm run db:migrate` before directing production webhooks to the app.
 
 ## Production checklist
 
@@ -88,3 +88,4 @@ provider-specific adapters and background retries still need implementation.
 - Confirm signature verification with real Meta webhook test payloads.
 - Add retention/deletion policies for message content and call transcripts.
 - Add rate limiting, audit logs and observability before onboarding customers.
+
